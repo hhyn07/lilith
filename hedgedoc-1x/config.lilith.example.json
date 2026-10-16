@@ -1,0 +1,19 @@
+{
+  "development": {
+    "loglevel": "info",
+    "db": {
+      "dialect": "sqlite",
+      "storage": "./db.hedgedoc.sqlite"
+    },
+    "domain": "localhost",
+    "urlAddPort": true,
+    "host": "127.0.0.1",
+    "port": 3000,
+    "allowAnonymous": false,
+    "allowAnonymousEdits": false,
+    "email": true,
+    "allowEmailRegister": true,
+    "defaultPermission": "private",
+    "sessionSecret": "CHANGE-ME-to-a-long-random-string"
+  }
+}

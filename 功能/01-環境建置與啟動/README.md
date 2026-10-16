@@ -75,3 +75,9 @@ powershell -ExecutionPolicy Bypass -File 功能/01-環境建置與啟動/check.p
 | E4 | 10-16 | 開新筆記後顯示 OFFLINE、編輯器空白 | Windows 路徑造成的建置錯誤 | 詳見 [02-Windows建置修正](../02-Windows建置修正/README.md) | ✅ 已處理 |
 | E5 | 10-16 | 背景伺服器工作顯示「failed, exit code 127」 | 為了重啟伺服器而主動結束舊的程序，不是錯誤 | 無需處理；重啟後以 ENV-7 確認伺服器正常 | ℹ️ 說明 |
 | E6 | 10-16 | 第一次跑檢測時 `SEC-12`（mocha）誤判 FAIL | 檢測腳本問題：PowerShell 5.1 在 `ErrorActionPreference=Stop` 下，會把原生程式的 stderr 警告（Node `DEP0170`）當成例外 | 在 `_lib/common.ps1` 新增 `Invoke-Native`，呼叫原生程式時暫時改用 `Continue`，改為依 exit code 判斷；所有檢測腳本都改用它 | ✅ 已處理 |
+
+## 2026-10-17 從零安裝測試（prompt 159）
+hhyn 問：別人照 README 做能不能啟動？
+- **原本不行**：README 的「啟動」只寫了 `node app.js`。從 GitHub 重新下載公開版照做，立刻出現 `Cannot find module 'express'`（沒安裝依賴）；而且沒有 `config.json`（含密鑰，不進 repo）、前端沒建置（`public/build/` 不進 repo）。
+- **修正**：README 改成「安裝與啟動」五步（安裝依賴 → 建置前端 → 複製 `config.lilith.example.json` 成 `config.json` 並設定 `sessionSecret` → `node app.js` → 打開並註冊）；新增 `hedgedoc-1x/config.lilith.example.json`（Lilith 用的最小設定，沒有任何真的密鑰）。
+- **實測**（在全新資料夾 clone 公開版、port 3010，不碰正式資料庫）：安裝 1 分 54 秒、建置 0 錯誤、啟動後 25 個 migration 全部套用並自動建立資料庫、註冊 → 登入 → 建立筆記都成功、首頁外觀與正式站一樣。測完刪除。

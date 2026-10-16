@@ -13,6 +13,19 @@
 - 檢查 GIT-1～7 改寫：一個 repo、`main`、非淺層且含 1.10.8、commit 都在、私人檔案沒被追蹤、`origin` 是 `hhyn07/lilith-notes` 且沒有 remote 會推到 HedgeDoc 官方。
 - 個人資料：`DEVLOG.md`、`功能/09-歡迎筆記/README.md` 有 hhyn 的 Email；repo 是 Private。將來要公開前要先拿掉。
 
+## 2026-10-17 公開版 `hhyn07/lilith`（prompt 155～157）
+- **兩個 repo**：`hhyn07/lilith-notes`（Private，完整歷史，平常開發用）；`hhyn07/lilith`（**Public**，乾淨快照，只有一個 commit）。
+- 公開前發現的個人資料：每個 commit 的作者 Email、文件裡的另一個 Email、文件裡的 Windows 使用者路徑。直接公開現有 repo 會把這些和整個歷史一起公開，所以 hhyn 選「另開乾淨的公開 repo」。
+- **hhyn 要求：絕對不能有任何 gitleak。** 下載官方 gitleaks v8.30.1（`github.com/gitleaks/gitleaks` 的 Windows zip，比對官方 SHA-256 一致），掃描結果：
+  - 第一次 2 個：HedgeDoc 文件 `docs/content/guides/auth/twitter.md` 的範例值（`esTCJFXXX…` 這種很像真金鑰的占位字）→ 改成 `your-twitter-consumer-key`（Private repo 也一起改，`5755a4da`）。
+  - 之後**檔案與 git 歷史都是 no leaks found**。
+- 公開版做法（**以後更新公開版也照這個順序**）：
+  1. `git archive HEAD` 匯出到暫存資料夾（不含 `config.json`、資料庫、備份、`node_modules`——這些本來就沒被追蹤）。
+  2. 取代個人資料：文件裡的 Email → 「（使用者的 Email）」、`C:\Users\<Windows 帳號>\` → `C:\Users\<使用者>\`；確認兩把外洩過的 API 金鑰值不存在。
+  3. `gitleaks dir` 掃檔案、建立 commit（作者與提交者都用 `hhyn07 <hhyn07@users.noreply.github.com>`）、`gitleaks git` 掃歷史，**兩次都要是 0**。
+  4. 確認後推送到 `hhyn07/lilith`。
+- 公開版包含 `prompt.txt`、`DEVLOG.md`（hhyn 同意）；只剩 HedgeDoc 原本的 `AUTHORS`／`.mailmap` 有上游貢獻者的 Email（上游本來就公開、授權要求保留）。
+
 ## 2026-10-16 以前（兩個 repo 的時期）
 
 ## 需求來源
