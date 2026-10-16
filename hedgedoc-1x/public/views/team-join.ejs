@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex">
+    <%- include('includes/favicon') %>
+    <base href="<%- serverURL %>/">
+    <title>加入團隊 - Lilith</title>
+    <%- include('includes/font-preload') %>
+    <%- include('build/cover-pack-header') %>
+    <script src="<%- serverURL %>/js/catppuccin.js?v=122"></script>
+    <link rel="stylesheet" href="<%- serverURL %>/css/catppuccin.css?v=122">
+</head>
+
+<%# Lilith (feature 24): opened an invite link -- sign in first, or the link is no longer valid %>
+<body class="lilith-login-page">
+    <header class="login-topbar">
+        <a class="login-brand" href="<%- serverURL %>/"><img class="ctp-brand-logo" src="<%- serverURL %>/icons/android-chrome-192x192.png" alt="" width="28" height="28">Lilith</a>
+    </header>
+    <main class="login-main ctp-join">
+        <h1 class="login-title"><i class="fa fa-users" aria-hidden="true"></i> 加入團隊</h1>
+        <% if (state === 'login') { %>
+        <p>你被邀請加入團隊「<strong><%= teamName %></strong>」。</p>
+        <p>請先登入（沒有帳號可以先註冊），登入後再打開一次這個邀請連結。</p>
+        <p><a class="btn btn-primary" href="<%- serverURL %>/login">登入</a> <a class="btn btn-default" href="<%- serverURL %>/register">註冊</a></p>
+        <% } else if (state === 'confirm') { %>
+        <p>你被邀請加入團隊「<strong><%= teamName %></strong>」。加入後可以閱讀、編輯這個團隊的筆記。</p>
+        <p><button type="button" class="btn btn-primary ctp-join-accept" data-token="<%= token %>">加入團隊</button> <a class="btn btn-default" href="<%- serverURL %>/">先不要</a></p>
+        <p class="ctp-team-msg ctp-bad ctp-join-msg" role="alert"></p>
+        <% } else { %>
+        <p>這個邀請連結已經失效或不存在。請向團隊管理者要一個新的連結。</p>
+        <p><a class="btn btn-default" href="<%- serverURL %>/">回首頁</a></p>
+        <% } %>
+    </main>
+</body>
+
+</html>

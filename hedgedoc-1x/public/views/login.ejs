@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex">
+    <%- include('includes/favicon') %>
+    <base href="<%- serverURL %>/">
+    <title>登入 - Lilith</title>
+    <%- include('includes/font-preload') %>
+    <%- include('build/cover-pack-header') %>
+    <script src="<%- serverURL %>/js/catppuccin.js?v=122"></script>
+    <link rel="stylesheet" href="<%- serverURL %>/css/catppuccin.css?v=122">
+</head>
+
+<body class="lilith-login-page">
+    <header class="login-topbar">
+        <a class="login-brand" href="<%- serverURL %>/"><img class="ctp-brand-logo" src="<%- serverURL %>/icons/android-chrome-192x192.png" alt="" width="28" height="28">Lilith</a>
+    </header>
+
+    <main class="login-main">
+        <h1 class="login-title">登入</h1>
+
+        <% if (errorMessage && errorMessage.length > 0) { %>
+        <div class="login-alert login-alert-error" role="alert"><%= errorMessage %></div>
+        <% } %>
+        <% if (infoMessage && infoMessage.length > 0) { %>
+        <div class="login-alert login-alert-info" role="status"><%= infoMessage %></div>
+        <% } %>
+
+        <% if (authProviders.email) { %>
+        <form class="login-form" method="post" action="<%- serverURL %>/login" enctype="application/x-www-form-urlencoded">
+            <label for="login-email">Email</label>
+            <input type="email" class="form-control" id="login-email" name="email" placeholder="您的 Email" autocomplete="email" required autofocus>
+
+            <label for="login-password">密碼</label>
+            <input type="password" class="form-control" id="login-password" name="password" placeholder="您的密碼" autocomplete="current-password" required>
+
+            <details class="login-forgot">
+                <summary>忘記密碼</summary>
+                <p>這個站沒有寄信重設密碼的功能。請在伺服器的 <code>hedgedoc-1x</code> 資料夾執行：</p>
+                <pre>node bin/manage_users --reset 你的email</pre>
+                <p>依提示輸入新密碼即可。</p>
+            </details>
+
+            <button type="submit" class="btn btn-primary login-submit">登入</button>
+        </form>
+        <% } %>
+
+        <% if (oauthProviders.length > 0) { %>
+        <% if (authProviders.email) { %>
+        <div class="login-divider"><span>或是</span></div>
+        <% } %>
+        <div class="login-providers">
+            <% oauthProviders.forEach(function (p) { %>
+            <a class="login-provider" href="<%- serverURL %>/auth/<%= p.id %>">
+                <i class="fa <%= p.icon %> fa-fw"></i>
+                <span>透過 <%= p.name %> 登入</span>
+            </a>
+            <% }) %>
+        </div>
+        <% } %>
+
+        <% if (otherMethods) { %>
+        <p class="login-other"><a href="<%- serverURL %>/">使用其他方式登入</a></p>
+        <% } %>
+        <% if (authProviders.email && authProviders.allowEmailRegister) { %>
+        <p class="login-other">還沒有帳號？<a href="<%- serverURL %>/register">註冊</a></p>
+        <% } %>
+    </main>
+</body>
+
+</html>

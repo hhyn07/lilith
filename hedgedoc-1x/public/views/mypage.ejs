@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex">
+    <%- include('includes/favicon') %>
+    <base href="<%- serverURL %>/">
+    <title><%= title %> - Lilith</title>
+    <%- include('includes/font-preload') %>
+    <%- include('build/cover-pack-header') %>
+    <script src="<%- serverURL %>/js/catppuccin.js?v=122"></script>
+    <link rel="stylesheet" href="<%- serverURL %>/css/catppuccin.css?v=122">
+</head>
+
+<%# Lilith: the user's own pages like HackMD's -- 垃圾桶 (feature 23) and 我的活動 (feature 24) %>
+<body class="lilith-login-page lilith-my-page">
+    <header class="login-topbar">
+        <a class="login-brand" href="<%- serverURL %>/"><img class="ctp-brand-logo" src="<%- serverURL %>/icons/android-chrome-192x192.png" alt="" width="28" height="28">Lilith</a>
+        <span class="ctp-bell-slot ctp-bell-topbar" hidden></span>
+        <nav class="ctp-my-tabs" aria-label="我的頁面">
+            <a href="<%- serverURL %>/"><i class="fa fa-history fa-fw" aria-hidden="true"></i> 紀錄</a>
+            <a href="<%- serverURL %>/activity"<% if (page === 'activity') { %> class="active" aria-current="page"<% } %>><i class="fa fa-clock-o fa-fw" aria-hidden="true"></i> 我的活動</a>
+            <a href="<%- serverURL %>/trash"<% if (page === 'trash') { %> class="active" aria-current="page"<% } %>><i class="fa fa-trash-o fa-fw" aria-hidden="true"></i> 垃圾桶</a>
+        </nav>
+    </header>
+
+    <main class="ctp-my-main">
+        <% if (page === 'trash') { %>
+        <div class="ctp-my-head">
+            <h1><i class="fa fa-trash-o" aria-hidden="true"></i> 垃圾桶</h1>
+            <button type="button" class="btn btn-default ctp-trash-empty" disabled><i class="fa fa-ban" aria-hidden="true"></i> 清空垃圾桶</button>
+        </div>
+        <p class="ctp-my-note">刪除的筆記會先放在這裡，<strong class="ctp-trash-days">30</strong> 天後自動永久刪除。還原後會回到「紀錄」。</p>
+        <%# filled by catppuccin.js from /api/lilith/trash %>
+        <ul class="ctp-trash-list" aria-live="polite"><li class="ctp-my-empty">載入中…</li></ul>
+        <%# feature 24: the trash of each team I own or manage %>
+        <div class="ctp-team-trash"></div>
+        <% } else { %>
+        <div class="ctp-my-head">
+            <h1><i class="fa fa-clock-o" aria-hidden="true"></i> 我的活動</h1>
+        </div>
+        <p class="ctp-my-note">你建立、編輯、移到垃圾桶的筆記，以及別人在你的筆記上的編輯。每篇筆記只列出最近一次編輯。</p>
+        <% if (!events.length) { %>
+        <p class="ctp-my-empty">還沒有活動。</p>
+        <% } else { var lastDay = null %>
+        <ol class="ctp-activity">
+            <% events.forEach(function (e) { %>
+            <% if (e.day !== lastDay) { lastDay = e.day %>
+            <li class="ctp-activity-day"><%= e.day %></li>
+            <% } %>
+            <li class="ctp-activity-item" data-type="<%= e.type %>">
+                <% if (e.type === 'edited-by' && e.who && e.who.photo) { %>
+                <img class="ctp-activity-avatar" src="<%= e.who.photo %>" alt="" width="32" height="32">
+                <% } else { %>
+                <img class="ctp-activity-avatar" src="<%= me.photo %>" alt="" width="32" height="32">
+                <% } %>
+                <div class="ctp-activity-text">
+                    <% if (e.type === 'created') { %>你建立了<% } else if (e.type === 'edited') { %>你編輯了<% } else if (e.type === 'trashed') { %>你把筆記移到垃圾桶：<% } else { %><strong><%= e.who ? e.who.name : '有人' %></strong> 編輯了你的筆記<% } %>
+                    <a href="<%= e.href %>"><%= e.title %></a><% if (e.trashed && e.type !== 'trashed') { %> <span class="ctp-activity-tag">在垃圾桶</span><% } %>
+                </div>
+                <time class="ctp-activity-time" datetime="<%= e.iso %>"><%= e.clock %></time>
+            </li>
+            <% }) %>
+        </ol>
+        <% } %>
+        <% } %>
+    </main>
+</body>
+
+</html>

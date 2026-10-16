@@ -1,0 +1,6 @@
+<%# Lilith: fetch the small fonts used above the fold early, so text does not swap fonts after it is shown %>
+<link rel="preload" href="<%- serverURL %>/fonts/lilith/wordmark.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="<%- serverURL %>/fonts/lilith/dmsans-latin.woff2" as="font" type="font/woff2" crossorigin>
+<% if (typeof quoteFont !== 'undefined' && quoteFont) { %>
+<link rel="preload" href="<%- serverURL %>/fonts/lilith/noto-serif-jp-quotes.woff2" as="font" type="font/woff2" crossorigin>
+<% } %>

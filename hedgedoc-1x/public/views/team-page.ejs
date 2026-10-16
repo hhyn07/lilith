@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex">
+    <%- include('includes/favicon') %>
+    <base href="<%- serverURL %>/">
+    <title><%= team.name %> - Lilith</title>
+    <%- include('includes/font-preload') %>
+    <%- include('build/cover-pack-header') %>
+    <script src="<%- serverURL %>/js/catppuccin.js?v=122"></script>
+    <link rel="stylesheet" href="<%- serverURL %>/css/catppuccin.css?v=122">
+</head>
+
+<%# Lilith (feature 27): a team's public page like HackMD's -- the team on the left
+    (picture, name, counts, follow, members, contributors, contact, links), its public
+    notes on the right (pinned ones first, then all of them: search, order, likes) %>
+<% function noteCard (n) { %>
+    <li class="ctp-tp-note" data-title="<%= n.title.toLowerCase() %>" data-time="<%= n.time %>">
+        <div class="ctp-tp-note-head">
+            <time datetime="<%= n.time %>" class="ctp-tp-when"></time>
+            <button type="button" class="ctp-tp-share" data-href="<%= n.href %>" title="複製連結" aria-label="複製連結"><i class="fa fa-share" aria-hidden="true"></i></button>
+        </div>
+        <a class="ctp-tp-note-title" href="<%= n.href %>"><%= n.title %><i class="fa <%= n.book ? 'fa-book' : 'fa-file-text-o' %> ctp-card-kind" aria-hidden="true"></i></a>
+        <% if (n.excerpt) { %><p class="ctp-tp-excerpt"><%= n.excerpt %></p><% } %>
+        <% if (n.people.length) { %>
+        <div class="ctp-tp-people"><% n.people.forEach(function (p) { %><img src="<%= p.photo %>" alt="<%= p.name %>" title="<%= p.name %>" width="24" height="24"><% }) %></div>
+        <% } %>
+        <div class="ctp-tp-note-foot">
+            <button type="button" class="ctp-tp-like<%= n.liked ? ' active' : '' %>" data-ref="<%= n.ref %>" aria-pressed="<%= n.liked ? 'true' : 'false' %>" title="<%= signin ? '喜歡' : '登入後可以按喜歡' %>"<% if (!signin) { %> disabled<% } %>><i class="fa <%= n.liked ? 'fa-heart' : 'fa-heart-o' %>" aria-hidden="true"></i> <span><%= n.likes %></span></button>
+            <span class="ctp-tp-views" title="瀏覽次數"><i class="fa fa-eye" aria-hidden="true"></i> <%= n.views %></span>
+            <% if (signin) { %>
+            <button type="button" class="ctp-tp-star<%= n.starred ? ' active' : '' %>" data-ref="<%= n.ref %>" aria-pressed="<%= n.starred ? 'true' : 'false' %>" title="<%= n.starred ? '取消收藏' : '收藏' %>" aria-label="收藏"><i class="fa <%= n.starred ? 'fa-bookmark' : 'fa-bookmark-o' %>" aria-hidden="true"></i></button>
+            <% } %>
+        </div>
+    </li>
+<% } %>
+<body class="lilith-login-page lilith-team-page">
+    <header class="login-topbar">
+        <a class="login-brand" href="<%- serverURL %>/"><img class="ctp-brand-logo" src="<%- serverURL %>/icons/android-chrome-192x192.png" alt="" width="28" height="28">Lilith</a>
+        <% if (signin) { %><span class="ctp-bell-slot ctp-bell-topbar" hidden></span><% } else { %>
+        <a class="ctp-user-page-signin" href="<%- serverURL %>/login">登入</a>
+        <% } %>
+    </header>
+
+    <main class="ctp-tp">
+        <aside class="ctp-tp-side">
+            <% if (team.photo) { %>
+            <img class="ctp-tp-avatar" src="<%= team.photo %>" alt="" width="96" height="96">
+            <% } else { %>
+            <span class="ctp-tp-avatar ctp-tp-initial" aria-hidden="true"><%= team.initial %></span>
+            <% } %>
+            <h1 class="ctp-tp-name"><%= team.name %></h1>
+            <% if (team.handle) { %><p class="ctp-tp-handle">@<%= team.handle %></p><% } %>
+            <p class="ctp-tp-counts">
+                <span><strong class="ctp-tp-followers"><%= followers %></strong> 追蹤者</span>
+                <span><strong><%= contributors.length %></strong> 貢獻者</span>
+                <span><strong><%= members.length %></strong> 團隊成員</span>
+            </p>
+            <div class="ctp-tp-actions">
+                <% if (isManager) { %>
+                <a class="btn ctp-tp-primary" href="<%- serverURL %>/team/<%= encodeURIComponent(team.id) %>/settings#profile">修改團隊資料</a>
+                <% } %>
+                <% if (signin) { %>
+                <button type="button" class="btn ctp-tp-follow<%= following ? ' active' : '' %>" data-team="<%= team.id %>" aria-pressed="<%= following ? 'true' : 'false' %>"><%= following ? '追蹤中' : '追蹤' %></button>
+                <% } %>
+                <button type="button" class="btn ctp-tp-share ctp-tp-share-team" data-href="<%= team.page %>" title="複製這個頁面的連結" aria-label="複製這個頁面的連結"><i class="fa fa-share" aria-hidden="true"></i></button>
+            </div>
+            <% if (team.bio) { %><p class="ctp-tp-bio"><%= team.bio %></p><% } %>
+
+            <h2 class="ctp-tp-h">團隊成員 <span class="ctp-tp-badge"><%= members.length %></span></h2>
+            <div class="ctp-tp-faces"><% members.forEach(function (p) { %><img src="<%= p.photo %>" alt="<%= p.name %>" title="<%= p.name %>" width="44" height="44"><% }) %></div>
+
+            <% if (contributors.length) { %>
+            <h2 class="ctp-tp-h">貢獻者 <span class="ctp-tp-badge"><%= contributors.length %></span></h2>
+            <div class="ctp-tp-faces"><% contributors.forEach(function (p) { %><img src="<%= p.photo %>" alt="<%= p.name %>" title="<%= p.name %>" width="44" height="44"><% }) %></div>
+            <% } %>
+
+            <% if (team.email) { %>
+            <h2 class="ctp-tp-h">聯絡</h2>
+            <a class="ctp-tp-link" href="mailto:<%= team.email %>"><i class="fa fa-envelope-o fa-fw" aria-hidden="true"></i> <%= team.email %></a>
+            <% } %>
+            <% if (team.links.length) { %>
+            <h2 class="ctp-tp-h">連結</h2>
+            <% team.links.forEach(function (l) { %>
+            <a class="ctp-tp-link" href="<%= l.url %>" target="_blank" rel="noopener noreferrer"><i class="fa fa-link fa-fw" aria-hidden="true"></i> <%= l.label %></a>
+            <% }) %>
+            <% } %>
+        </aside>
+
+        <section class="ctp-tp-main">
+            <div class="ctp-tp-tabs"><span class="active">公開筆記 <span class="ctp-tp-badge"><%= notes.length %></span></span></div>
+
+            <% if (pinned.length || isManager) { %>
+            <div class="ctp-tp-pins">
+                <% if (pinned.length) { %>
+                <h2 class="ctp-tp-h"><i class="fa fa-thumb-tack" aria-hidden="true"></i> 釘選筆記</h2>
+                <ul class="ctp-tp-list"><% pinned.forEach(noteCard) %></ul>
+                <% } else { %>
+                <p class="ctp-tp-pin-hint">選擇最多 3 篇想主打的筆記。</p>
+                <% } %>
+                <% if (isManager && notes.length) { %>
+                <button type="button" class="btn ctp-tp-pick"><i class="fa fa-plus" aria-hidden="true"></i> 選擇釘選筆記</button>
+                <% } %>
+            </div>
+            <% } %>
+
+            <div class="ctp-tp-toolbar">
+                <span class="ctp-tp-all">所有筆記</span>
+                <div class="ctp-tp-search"><i class="fa fa-search" aria-hidden="true"></i><input type="search" class="form-control" placeholder="搜尋標題..." aria-label="搜尋標題"></div>
+                <select class="form-control ctp-tp-order" aria-label="排序"><option value="new">新到舊</option><option value="old">舊到新</option></select>
+            </div>
+            <% if (notes.length) { %>
+            <ul class="ctp-tp-list ctp-tp-all-list"><% notes.forEach(noteCard) %></ul>
+            <p class="ctp-tp-empty" hidden>找不到符合的筆記</p>
+            <% } else { %>
+            <p class="ctp-tp-empty">這個團隊還沒有公開筆記。</p>
+            <% } %>
+        </section>
+    </main>
+    <script type="application/json" id="ctp-team-page"><%- pageData %></script>
+</body>
+
+</html>

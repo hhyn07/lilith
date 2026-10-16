@@ -1,0 +1,43 @@
+#!/usr/bin/env node
+
+// Give existing users the welcome note they would get when signing up, and put
+// it back into their history if it is missing there.
+// Safe to run more than once.
+//
+// Stop the server first: user history is read-modify-written without a lock,
+// so a note being edited at the same moment could overwrite the change.
+//
+// Usage: node bin/welcome_notes
+
+const logger = require('../lib/logger')
+logger.transports.forEach((transport) => transport.level = 'warning')
+
+const models = require('../lib/models/')
+const { ensureWelcomeNote } = require('../lib/welcome')
+
+async function main () {
+  const users = await models.User.findAll()
+  let created = 0
+  let repaired = 0
+  for (const user of users) {
+    const result = await ensureWelcomeNote(models, user)
+    const name = user.email || user.profileid || user.id
+    if (result.created) {
+      created++
+      console.log(`Created welcome note for ${name}`)
+    } else if (result.addedToHistory) {
+      repaired++
+      console.log(`Added the existing welcome note back to the history of ${name}`)
+    } else {
+      console.log(`Skipped ${name}: welcome note already present`)
+    }
+  }
+  console.log(`Done: ${created} created, ${repaired} re-added to history, ${users.length - created - repaired} unchanged`)
+}
+
+main().then(function () {
+  process.exit(0)
+}).catch(err => {
+  console.error('An error occurred:', err)
+  process.exit(1)
+})

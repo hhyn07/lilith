@@ -1,0 +1,33 @@
+<!-- revision modal -->
+<%# Lilith: laid out like HackMD's version history: versions on the left (avatar, time, author),
+    the chosen version on the right with a "diff with the previous version" switch %>
+<div class="modal fade ctp-rev-modal" id="revisionModal" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title" id="mySmallModalLabel"><i class="fa fa-history"></i> 版本紀錄</h4>
+            </div>
+            <div class="modal-body">
+                <div class="ctp-rev-layout">
+                    <div class="ctp-rev-side">
+                        <div class="ctp-rev-side-title">所有版本</div>
+                        <div class="list-group ui-revision-list"></div>
+                    </div>
+                    <div class="ctp-rev-main">
+                        <label class="ctp-rev-diff"><input type="checkbox" id="revisionModalDiff" checked> 與上一版本的差異</label>
+                        <div class="ctp-rev-viewer">
+                            <textarea id="revisionViewer" style="display:none;"></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal"><%= __('Cancel') %></button>
+                <button type="button" class="btn btn-default" id="revisionModalDownload"><i class="fa fa-download"></i> <%= __('Download') %></button>
+                <button type="button" class="btn btn-primary" id="revisionModalRevert"><i class="fa fa-undo"></i> 還原成這個版本</button>
+            </div>
+        </div>
+    </div>
+</div>

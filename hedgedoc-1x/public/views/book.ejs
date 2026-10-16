@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="mobile-web-app-capable" content="yes">
+    <% if(typeof robots !== 'undefined' && robots) { %>
+    <meta name="robots" content="<%= robots %>">
+    <% } %>
+    <% if(typeof description !== 'undefined' && description) { %>
+    <meta name="description" content="<%= description %>">
+    <% } %>
+    <% for (var og in opengraph) { %>
+    <% if (opengraph.hasOwnProperty(og) && opengraph[og].trim() !== '') { %>
+    <meta property="og:<%= og %>" content="<%= opengraph[og] %>">
+    <% }} if (!opengraph.hasOwnProperty('image')) { %>
+    <meta property="og:image" content="<%- serverURL %>/icons/android-chrome-512x512.png">
+    <meta property="og:image:alt" content="HedgeDoc logo">
+    <meta property="og:image:type" content="image/png">
+    <% } %>
+    <base href="<%- serverURL %>/">
+    <title><%= title %></title>
+    <%- include('includes/favicon.ejs') %>
+    <link rel="stylesheet" href='<%- serverURL %>/build/emojify.js/dist/css/basic/emojify.min.css'>
+    <%- include('build/pretty-pack-header') %>
+    <script src="<%- serverURL %>/js/catppuccin.js?v=122"></script>
+    <link rel="stylesheet" href="<%- serverURL %>/css/catppuccin.css?v=122">
+</head>
+
+<body class="ctp-book-page" style="display:none;">
+<%# Lilith (feature 21): book mode like HackMD's -- the book's table of contents on the left
+    (from the index note's lists of links, lib/book.js), the page on the right %>
+<% function pageHref (n) {
+     if (n.note && n.note.canView) return serverURL + '/b/' + encodeURIComponent(bookRef) + '/' + encodeURIComponent(n.note.ref)
+     return n.external || n.local || null
+   }
+   function renderNodes (nodes, depth) { %>
+    <ul class="ctp-book-list" data-depth="<%= depth %>">
+    <% nodes.forEach(function (n) { %>
+        <% if (n.type === 'group') { %>
+        <li class="ctp-book-group">
+            <details open>
+                <summary><i class="fa fa-angle-down ctp-book-caret" aria-hidden="true"></i><span class="ctp-book-text"><%= n.title %></span></summary>
+                <% renderNodes(n.children, depth + 1) %>
+            </details>
+        </li>
+        <% } else { var href = pageHref(n); var active = n.note && n.note.ref === pageRef; %>
+        <li class="ctp-book-item<%= active ? ' active' : '' %>">
+            <% if (href) { %>
+            <a href="<%= href %>"<% if (n.external) { %> target="_blank" rel="noopener"<% } %><% if (active) { %> aria-current="page"<% } %>><span class="ctp-book-text"><%= n.title.trim() || '未命名' %></span><% if (n.external) { %> <i class="fa fa-external-link" aria-hidden="true"></i><% } %></a>
+            <% } else if (n.note) { %>
+            <span class="ctp-book-locked" title="你沒有權限閱讀這篇筆記"><span class="ctp-book-text"><%= n.title.trim() || '未命名' %></span> <i class="fa fa-lock" aria-hidden="true"></i></span>
+            <% } else { %>
+            <span class="ctp-book-label"><span class="ctp-book-text"><%= n.title.trim() %></span></span>
+            <% } %>
+            <% if (n.children.length) { renderNodes(n.children, depth + 1) } %>
+        </li>
+        <% } %>
+    <% }) %>
+    </ul>
+<% } %>
+<div class="ctp-book">
+    <aside class="ctp-book-side hidden-print" aria-label="書本目錄">
+        <div class="ctp-book-tools">
+            <input type="search" class="form-control ctp-book-search" placeholder="搜尋標題..." aria-label="搜尋標題">
+            <a class="ctp-pretty-btn ctp-book-refresh" href="<%= serverURL %>/b/<%= encodeURIComponent(bookRef) %><%= isIndex ? '' : '/' + encodeURIComponent(pageRef) %>" title="重新整理" aria-label="重新整理"><svg class="ctp-line-icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></svg></a>
+            <a class="ctp-pretty-btn" href="<%= indexEditLink %>" title="編輯目錄" aria-label="編輯目錄"><svg class="ctp-line-icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.17 6.81a1 1 0 0 0-3.99-3.99L3.84 16.17a2 2 0 0 0-.5.83l-1.32 4.35a.5.5 0 0 0 .62.62l4.35-1.32a2 2 0 0 0 .83-.5z"/><path d="m15 5 4 4"/></svg></a>
+            <button type="button" class="ctp-pretty-btn ctp-book-collapse" title="收合目錄" aria-label="收合目錄"><svg class="ctp-line-icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m11 17-5-5 5-5"/><path d="m18 17-5-5 5-5"/></svg></button>
+        </div>
+        <nav class="ctp-book-nav">
+            <a class="ctp-book-home<%= isIndex ? ' active' : '' %>" href="<%= serverURL %>/b/<%= encodeURIComponent(bookRef) %>"<% if (isIndex) { %> aria-current="page"<% } %>><i class="fa fa-book fa-fw" aria-hidden="true"></i> 目錄</a>
+            <% if (tree.length) { renderNodes(tree, 0) } else { %>
+            <p class="ctp-book-empty">目錄筆記裡還沒有連結。用清單列出筆記連結，例如 <code>- [第一章](/筆記網址)</code>，就會出現在這裡。</p>
+            <% } %>
+            <p class="ctp-book-nomatch" hidden>找不到符合的標題</p>
+        </nav>
+    </aside>
+    <div class="ctp-book-main">
+        <header class="ctp-pretty-bar ctp-book-bar unselectable hidden-print">
+            <div class="ctp-pretty-left">
+                <button type="button" class="ctp-pretty-btn ctp-book-expand" title="顯示目錄" aria-label="顯示目錄" hidden><i class="fa fa-bars" aria-hidden="true"></i></button>
+                <a class="ctp-pretty-brand" href="<%- serverURL %>/" title="Lilith"><img class="ctp-brand-logo" src="<%- serverURL %>/icons/android-chrome-192x192.png" alt="Lilith" width="28" height="28"></a>
+                <nav class="ctp-book-crumbs" aria-label="位置">
+                    <a href="<%= serverURL %>/b/<%= encodeURIComponent(bookRef) %>"><i class="fa fa-book" aria-hidden="true"></i> <%= bookTitle %></a>
+                    <% if (!isIndex) { %>
+                    <span class="ctp-book-sep" aria-hidden="true">/</span>
+                    <span class="ctp-book-current"><i class="fa fa-file-text-o" aria-hidden="true"></i> <%= pageTitle %></span>
+                    <% } %>
+                </nav>
+            </div>
+            <div class="ctp-pretty-actions">
+                <a class="btn btn-default ctp-book-edit" href="<%= editLink %>"><i class="fa fa-pencil" aria-hidden="true"></i> 編輯</a>
+                <button type="button" class="ctp-pretty-btn ctp-pretty-star" title="收藏" aria-label="收藏" aria-pressed="false" hidden><i class="fa fa-bookmark-o" aria-hidden="true"></i></button>
+                <span class="ctp-pretty-theme"></span>
+            </div>
+        </header>
+        <div class="ctp-book-meta">
+            <div class="ctp-book-edited">
+                <% if (editorName) { %>最後由 <strong><%= editorName %></strong> 於 <time datetime="<%= editedAt %>"><%= editedOn %></time> 編輯<% } else if (editedOn) { %>最後編輯於 <time datetime="<%= editedAt %>"><%= editedOn %></time><% } %>
+            </div>
+            <% if (contributors.length) { %>
+            <div class="ctp-book-people">貢獻者：<% contributors.forEach(function (p) { %><img src="<%= p.photo %>" alt="<%= p.name %>" title="<%= p.name %>" width="26" height="26"><% }) %></div>
+            <% } %>
+        </div>
+        <div id="doc" class="container markdown-body" <% if (lang) { %> lang="<%= lang %>"<% } %>><%= body %></div>
+    </div>
+</div>
+<script type="application/json" id="ctp-book-links"><%- JSON.stringify((function () {
+    var map = {}
+    ;(function walk (nodes) { nodes.forEach(function (n) {
+        if (n.note && n.note.canView) map[n.note.link] = serverURL + '/b/' + encodeURIComponent(bookRef) + '/' + encodeURIComponent(n.note.ref)
+        walk(n.children)
+    }) })(tree)
+    return map
+})()).replace(/</g, '\\u003c') %></script>
+    <div class="ui-toc dropup unselectable hidden-print" style="display:none;">
+        <div class="pull-right dropdown">
+            <a id="tocLabel" class="ui-toc-label btn btn-default" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false" title="本頁目錄">
+                <i class="fa fa-bars"></i>
+            </a>
+            <ul id="ui-toc" class="ui-toc-dropdown dropdown-menu" aria-labelledby="tocLabel">
+            </ul>
+        </div>
+    </div>
+    <div id="ui-toc-affix" class="ui-affix-toc ui-toc-dropdown unselectable hidden-print" data-spy="affix" style="display:none;"></div>
+</body>
+
+</html>
+<script src="<%= serverURL %>/js/mathjax-config-extra.js"></script>
+<script src="<%- serverURL %>/build/MathJax/MathJax.js" defer></script>
+<script src="<%- serverURL %>/build/MathJax/config/TeX-AMS-MML_HTMLorMML.js" defer></script>
+<script src="<%- serverURL %>/build/MathJax/config/Safe.js" defer></script>
+<%- include('build/pretty-pack-scripts') %>
+<%- include('shared/ga') %>

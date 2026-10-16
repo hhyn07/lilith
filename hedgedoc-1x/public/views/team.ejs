@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex">
+    <%- include('includes/favicon') %>
+    <base href="<%- serverURL %>/">
+    <title>團隊設定 - Lilith</title>
+    <%- include('includes/font-preload') %>
+    <%- include('build/cover-pack-header') %>
+    <script src="<%- serverURL %>/js/catppuccin.js?v=122"></script>
+    <link rel="stylesheet" href="<%- serverURL %>/css/catppuccin.css?v=122">
+</head>
+
+<%# Lilith (feature 24): team settings like HackMD's -- general, members (invite link,
+    add by name or e-mail, roles). catppuccin.js fills it from /api/lilith/teams/:id %>
+<body class="lilith-login-page lilith-my-page">
+    <header class="login-topbar">
+        <a class="login-brand" href="<%- serverURL %>/"><img class="ctp-brand-logo" src="<%- serverURL %>/icons/android-chrome-192x192.png" alt="" width="28" height="28">Lilith</a>
+        <span class="ctp-bell-slot ctp-bell-topbar" hidden></span>
+        <nav class="ctp-my-tabs" aria-label="我的頁面">
+            <a href="<%- serverURL %>/?team=<%= encodeURIComponent(teamId) %>"><i class="fa fa-users fa-fw" aria-hidden="true"></i> 回到團隊</a>
+        </nav>
+    </header>
+
+    <main class="ctp-my-main ctp-team-settings" data-team-id="<%= teamId %>">
+        <div class="ctp-my-head"><h1><i class="fa fa-cog" aria-hidden="true"></i> 團隊設定 <span class="ctp-team-title"></span></h1></div>
+        <div class="ctp-team-layout">
+            <nav class="ctp-team-nav" aria-label="設定項目">
+                <a href="#general" data-section="general">一般設定</a>
+                <a href="#notes" data-section="notes">團隊筆記</a>
+                <a href="#members" data-section="members">團隊成員</a>
+                <a href="#social" data-section="social">社群</a>
+                <a href="<%- serverURL %>/t/<%= encodeURIComponent(teamId) %>" class="ctp-team-pagelink"><i class="fa fa-external-link" aria-hidden="true"></i> 公開頁</a>
+            </nav>
+            <div class="ctp-team-body">
+                <section class="ctp-team-section" data-section="general" hidden>
+                    <h2>一般設定</h2>
+                    <%# like HackMD: picture, name and description with a preview of the public page card %>
+                    <form class="ctp-team-general ctp-team-box">
+                        <div class="ctp-team-general-top">
+                            <div class="ctp-team-pic">
+                                <span class="ctp-team-pic-face" aria-hidden="true"></span>
+                                <button type="button" class="ctp-team-pic-edit" title="更換頭像" aria-label="更換頭像" aria-expanded="false"><i class="fa fa-pencil" aria-hidden="true"></i></button>
+                            </div>
+                            <a class="btn ctp-team-outline ctp-team-pagelink2" href="<%- serverURL %>/t/<%= encodeURIComponent(teamId) %>">前往公開頁</a>
+                        </div>
+                        <div class="ctp-team-pic-url" hidden>
+                            <label for="ctpTeamPhoto">頭像圖片網址</label>
+                            <input id="ctpTeamPhoto" class="form-control" name="photo" maxlength="500" placeholder="https://（空白就用團隊名稱的第一個字）">
+                        </div>
+                        <div class="ctp-team-general-grid">
+                            <div>
+                                <label for="ctpTeamName">團隊名稱</label>
+                                <input id="ctpTeamName" class="form-control" name="name" maxlength="40" autocomplete="off">
+                                <label for="ctpTeamBio">團隊描述</label>
+                                <textarea id="ctpTeamBio" class="form-control" name="bio" maxlength="300" rows="5" placeholder="您的團隊描述"></textarea>
+                            </div>
+                            <div>
+                                <span class="ctp-team-label">公開頁卡片預覽</span>
+                                <div class="ctp-team-preview" aria-live="polite">
+                                    <span class="ctp-team-preview-face" aria-hidden="true"></span>
+                                    <strong class="ctp-team-preview-name"></strong>
+                                    <span class="ctp-team-preview-handle"></span>
+                                    <p class="ctp-team-preview-bio"></p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="ctp-team-actions">
+                            <button type="button" class="btn ctp-team-outline ctp-team-general-cancel">取消</button>
+                            <button type="submit" class="btn ctp-team-save">儲存</button>
+                        </div>
+                        <p class="ctp-team-msg ctp-team-general-msg" role="status"></p>
+                    </form>
+
+                    <h2 class="ctp-team-h2">成員存取</h2>
+                    <form class="ctp-team-handle ctp-team-box">
+                        <label for="ctpTeamHandle">團隊網址</label>
+                        <span class="ctp-team-handle-base"><%- serverURL %>/t/</span>
+                        <input id="ctpTeamHandle" class="form-control" name="handle" maxlength="39" autocomplete="off" spellcheck="false" placeholder="例如 ttu-malware">
+                        <p class="ctp-team-hint">僅允許輸入 a-z、0-9 以及 -（「-」不能是第一個字），2～39 個字。空白就用團隊的編號。</p>
+                        <div class="ctp-team-actions">
+                            <button type="button" class="btn ctp-team-outline ctp-team-handle-cancel">取消</button>
+                            <button type="submit" class="btn ctp-team-save">儲存</button>
+                        </div>
+                        <p class="ctp-team-msg ctp-team-handle-msg" role="status"></p>
+                    </form>
+
+                    <h2 class="ctp-team-h2">危險區域</h2>
+                    <div class="ctp-team-danger">
+                        <div class="ctp-team-danger-row">
+                            <div><strong>團隊隱私性</strong><p class="ctp-team-hint">開放團隊：任何人都看得到公開頁。不開放：公開頁只有成員看得到。</p></div>
+                            <select class="form-control ctp-team-privacy" aria-label="團隊隱私性"><option value="open">開放團隊</option><option value="closed">不開放</option></select>
+                        </div>
+                        <p class="ctp-team-msg ctp-team-privacy-msg" role="status"></p>
+                        <div class="ctp-team-danger-row">
+                            <div><strong class="ctp-team-leave-text">離開團隊</strong><p class="ctp-team-hint ctp-team-leave-text">離開後就看不到團隊筆記了；你建立的團隊筆記仍留在團隊裡。</p></div>
+                            <button type="button" class="btn ctp-team-red ctp-team-leave">離開團隊</button>
+                        </div>
+                        <div class="ctp-team-danger-row">
+                            <div><strong class="ctp-team-delete-text">刪除團隊</strong><p class="ctp-team-hint ctp-team-delete-text">所有成員都會被移出；團隊筆記不會被刪除，會回到各自建立者的「我的空間」。</p></div>
+                            <button type="button" class="btn ctp-team-red ctp-team-delete">刪除團隊</button>
+                        </div>
+                    </div>
+                </section>
+                <section class="ctp-team-section" data-section="notes" hidden>
+                    <h2>團隊筆記</h2>
+                    <p class="ctp-team-hint">團隊裡的所有筆記。公開的（訪客也能讀）會出現在公開頁。</p>
+                    <table class="ctp-team-notes">
+                        <thead><tr><th>標題</th><th>權限</th><th>最後變更</th></tr></thead>
+                        <tbody></tbody>
+                    </table>
+                    <p class="ctp-team-msg ctp-team-notes-msg" role="status"></p>
+                </section>
+                <section class="ctp-team-section" data-section="social" hidden>
+                    <h2>社群</h2>
+                    <p class="ctp-team-hint">顯示在團隊公開頁的「聯絡」與「連結」，任何人都看得到。</p>
+                    <form class="ctp-team-social ctp-team-box">
+                        <label for="ctpTeamEmail">公開信箱</label>
+                        <input id="ctpTeamEmail" class="form-control" name="email" type="email" maxlength="200">
+                        <label>自訂連結（最多 5 個）</label>
+                        <div class="ctp-team-row ctp-team-linkrow"><input class="form-control" name="label0" maxlength="40" placeholder="名稱" aria-label="連結 1 名稱"><input class="form-control" name="url0" maxlength="500" placeholder="https://" aria-label="連結 1 網址"></div>
+                        <div class="ctp-team-row ctp-team-linkrow"><input class="form-control" name="label1" maxlength="40" placeholder="名稱" aria-label="連結 2 名稱"><input class="form-control" name="url1" maxlength="500" placeholder="https://" aria-label="連結 2 網址"></div>
+                        <div class="ctp-team-row ctp-team-linkrow"><input class="form-control" name="label2" maxlength="40" placeholder="名稱" aria-label="連結 3 名稱"><input class="form-control" name="url2" maxlength="500" placeholder="https://" aria-label="連結 3 網址"></div>
+                        <div class="ctp-team-row ctp-team-linkrow"><input class="form-control" name="label3" maxlength="40" placeholder="名稱" aria-label="連結 4 名稱"><input class="form-control" name="url3" maxlength="500" placeholder="https://" aria-label="連結 4 網址"></div>
+                        <div class="ctp-team-row ctp-team-linkrow"><input class="form-control" name="label4" maxlength="40" placeholder="名稱" aria-label="連結 5 名稱"><input class="form-control" name="url4" maxlength="500" placeholder="https://" aria-label="連結 5 網址"></div>
+                        <div class="ctp-team-actions">
+                            <button type="submit" class="btn ctp-team-save">儲存</button>
+                        </div>
+                        <p class="ctp-team-msg ctp-team-social-msg" role="status"></p>
+                    </form>
+                </section>
+                <section class="ctp-team-section" data-section="members" hidden>
+                    <h2>團隊成員</h2>
+                    <div class="ctp-team-manage">
+                        <h3>邀請連結</h3>
+                        <div class="ctp-team-invite">
+                            <p class="ctp-team-invite-none">目前沒有啟用中的邀請連結</p>
+                            <div class="ctp-team-invite-on" hidden>
+                                <input class="form-control ctp-team-invite-url" readonly aria-label="邀請連結">
+                                <button type="button" class="btn btn-default ctp-team-invite-copy"><i class="fa fa-clipboard" aria-hidden="true"></i> 複製</button>
+                                <button type="button" class="btn btn-default ctp-team-invite-off">停用</button>
+                                <p class="ctp-team-invite-exp"></p>
+                            </div>
+                            <button type="button" class="btn btn-default ctp-team-invite-new">產生邀請連結</button>
+                        </div>
+                        <p class="ctp-team-hint">拿到連結的人登入後打開就會加入團隊（成員權限），連結 7 天後失效。</p>
+                        <h3>新增成員</h3>
+                        <form class="ctp-team-add">
+                            <div class="ctp-team-row">
+                                <div class="ctp-team-who"><i class="fa fa-search" aria-hidden="true"></i><input class="form-control" name="who" placeholder="輸入使用者名稱或 Email" autocomplete="off" aria-label="使用者名稱或 Email"></div>
+                                <select class="form-control" name="role" aria-label="權限"><option value="member">成員</option><option value="admin">管理者</option></select>
+                                <button type="submit" class="btn btn-default">新增</button>
+                            </div>
+                        </form>
+                        <p class="ctp-team-msg ctp-team-add-msg" role="status"></p>
+                    </div>
+                    <h3>成員清單</h3>
+                    <table class="ctp-team-members">
+                        <thead><tr><th>名稱</th><th>權限</th><th><span class="sr-only">動作</span></th></tr></thead>
+                        <tbody></tbody>
+                    </table>
+                    <p class="ctp-team-hint">擁有者、管理者：管理成員、邀請連結、團隊垃圾桶，可以刪除任何團隊筆記。成員：閱讀、編輯所有團隊筆記。</p>
+                </section>
+                <p class="ctp-team-msg ctp-team-load-msg" role="alert"></p>
+            </div>
+        </div>
+    </main>
+</body>
+
+</html>

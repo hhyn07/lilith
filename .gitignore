@@ -1,0 +1,12 @@
+# hedgedoc-1x/ (the HedgeDoc 1.10.8 fork) is part of this repository since 2026-10-16;
+# its own .gitignore keeps config.json, the database and the build out
+
+# Local only: database backups and the server log
+/備份/
+/hedgedoc-server.log
+
+# build output
+webpack.log
+
+# temporary commit message file
+m.tmp

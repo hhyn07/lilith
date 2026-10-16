@@ -1,0 +1,55 @@
+<!-- profile modal (Lilith): edit display name, e-mail and password -->
+<div class="modal fade profile-modal" tabindex="-1" role="dialog" aria-labelledby="profileModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="profileModalLabel">編輯使用者資料</h4>
+            </div>
+            <form class="profile-form" novalidate>
+                <div class="modal-body">
+                    <div class="profile-head">
+                        <img class="profile-photo" alt="" width="48" height="48">
+                        <div class="profile-head-text">
+                            <div class="profile-head-name"></div>
+                            <div class="profile-head-email"></div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="profile-name">顯示名稱</label>
+                        <input type="text" class="form-control" id="profile-name" name="displayName" maxlength="50" autocomplete="nickname" required>
+                        <p class="help-block profile-provider-note" hidden>這個帳號由第三方登入，下次登入時名稱可能會被該平台的資料覆蓋。</p>
+                    </div>
+
+                    <div class="profile-password-fields">
+                        <div class="form-group">
+                            <label for="profile-email">E-Mail</label>
+                            <input type="email" class="form-control" id="profile-email" name="email" autocomplete="email">
+                        </div>
+                        <div class="form-group">
+                            <label for="profile-new-password">新密碼</label>
+                            <input type="password" class="form-control" id="profile-new-password" name="newPassword" minlength="8" maxlength="128" autocomplete="new-password" placeholder="不變更請留空">
+                            <p class="help-block">8 到 128 個字，且包含大小寫英文字母及數字</p>
+                        </div>
+                        <div class="form-group">
+                            <label for="profile-new-password2">確認新密碼</label>
+                            <input type="password" class="form-control" id="profile-new-password2" autocomplete="new-password">
+                        </div>
+                        <div class="form-group profile-current">
+                            <label for="profile-current-password">目前的密碼</label>
+                            <input type="password" class="form-control" id="profile-current-password" name="currentPassword" autocomplete="current-password">
+                            <p class="help-block">變更 E-Mail 或密碼時需要輸入。</p>
+                        </div>
+                    </div>
+
+                    <p class="profile-status" role="status" aria-live="polite"></p>
+                </div>
+                <div class="modal-footer">
+                    <a class="btn btn-default profile-logout" href="<%- serverURL %>/logout"><i class="fa fa-sign-out"></i> 登出</a>
+                    <button type="submit" class="btn btn-primary profile-save">儲存</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

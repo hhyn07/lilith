@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex">
+    <%- include('includes/favicon') %>
+    <base href="<%- serverURL %>/">
+    <title><%= profileName %> - Lilith</title>
+    <%- include('includes/font-preload') %>
+    <%- include('build/cover-pack-header') %>
+    <script src="<%- serverURL %>/js/catppuccin.js?v=122"></script>
+    <link rel="stylesheet" href="<%- serverURL %>/css/catppuccin.css?v=122">
+</head>
+
+<%# Lilith: public profile page (like HackMD's): avatar and name on the left,
+    the notes guests can read on the right %>
+<body class="lilith-login-page lilith-user-page">
+    <header class="login-topbar">
+        <a class="login-brand" href="<%- serverURL %>/"><img class="ctp-brand-logo" src="<%- serverURL %>/icons/android-chrome-192x192.png" alt="" width="28" height="28">Lilith</a>
+        <% if (!signin) { %>
+        <a class="ctp-user-page-signin" href="<%- serverURL %>/login">登入</a>
+        <% } %>
+    </header>
+
+    <main class="ctp-user-page">
+        <aside class="ctp-user-card">
+            <img class="ctp-user-page-avatar" src="<%= profilePhoto %>" alt="" width="160" height="160">
+            <h1 class="ctp-user-page-name"><%= profileName %></h1>
+            <p class="ctp-user-page-count"><i class="fa fa-file-text-o fa-fw"></i> <%= notes.length %> 篇公開筆記</p>
+            <% if (isSelf) { %>
+            <a class="btn btn-default ctp-user-page-edit" href="<%- serverURL %>/#edit-profile"><i class="fa fa-pencil fa-fw"></i> 修改個人資料</a>
+            <% } %>
+        </aside>
+
+        <section class="ctp-user-notes">
+            <h2 class="ctp-home-title"><span>公開筆記</span><small>訪客也能閱讀的筆記，最近更新的在前</small></h2>
+            <% if (notes.length > 0) { %>
+            <ul class="ctp-cards">
+                <% notes.forEach(function (n) { %>
+                <li class="ctp-card">
+                    <a href="<%- serverURL %>/<%= n.book ? 'b' : 's' %>/<%= n.shortid %>">
+                        <span class="ctp-card-cover" aria-hidden="true"></span>
+                        <span class="ctp-card-body">
+                            <% if (n.tags.length > 0) { %>
+                            <span class="ctp-card-tags"><% n.tags.forEach(function (t) { %><span><%= t %></span><% }) %></span>
+                            <% } %>
+                            <span class="ctp-card-title"><%= n.title %><i class="fa <%= n.book ? 'fa-book' : 'fa-file-text-o' %> ctp-card-kind" title="<%= n.book ? '書本' : '筆記' %>" aria-hidden="true"></i></span>
+                            <% if (n.excerpt) { %>
+                            <span class="ctp-card-excerpt"><%= n.excerpt %></span>
+                            <% } %>
+                            <span class="ctp-card-meta"><span><i class="fa fa-calendar-o"></i> <time><%= n.date %></time></span><span><i class="fa fa-clock-o"></i> 約 <%= n.minutes %> 分鐘</span></span>
+                        </span>
+                    </a>
+                </li>
+                <% }) %>
+            </ul>
+            <% } else { %>
+            <p class="ctp-home-empty">還沒有公開的筆記。</p>
+            <% } %>
+        </section>
+    </main>
+</body>
+
+</html>

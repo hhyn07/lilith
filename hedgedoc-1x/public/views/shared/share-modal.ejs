@@ -1,0 +1,86 @@
+<!-- share modal (Lilith): share link, view mode, read/edit permissions, publish -->
+<div class="modal fade share-modal" tabindex="-1" role="dialog" aria-labelledby="shareModalLabel" aria-hidden="true"
+     data-allow-freely="<%= (allowAnonymous || allowAnonymousEdits) ? 'true' : 'false' %>">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="sr-only" id="shareModalLabel">分享</h4>
+                <ul class="share-tabs" role="tablist">
+                    <li role="presentation" class="active"><button type="button" role="tab" aria-controls="share-tab-share" data-share-tab="share">分享</button></li>
+                    <li role="presentation"><button type="button" role="tab" aria-controls="share-tab-publish" data-share-tab="publish">公開發表</button></li>
+                </ul>
+            </div>
+
+            <div class="modal-body share-pane" id="share-tab-share" data-share-pane="share">
+                <label class="share-label" for="share-url">共享網址</label>
+                <div class="share-url-base"></div>
+                <div class="share-row">
+                    <input type="text" class="form-control share-url" id="share-url" readonly aria-describedby="share-url-full">
+                    <button type="button" class="btn btn-default share-copy" data-copy="share">複製</button>
+                </div>
+                <span class="sr-only" id="share-url-full"></span>
+                <div class="share-row">
+                    <div class="share-mode" data-mode="view">
+                        <button type="button" class="form-control share-mode-toggle" aria-haspopup="listbox" aria-expanded="false" aria-label="開啟模式">
+                            <i class="fa fa-eye fa-fw share-mode-icon"></i> <span class="share-mode-label">瀏覽模式</span>
+                            <i class="fa fa-angle-down share-mode-caret"></i>
+                        </button>
+                        <ul class="share-mode-menu" role="listbox" hidden>
+                            <li role="option" data-mode="edit" data-icon="fa-pencil"><i class="fa fa-pencil fa-fw"></i> 編輯模式</li>
+                            <li role="option" data-mode="view" data-icon="fa-eye"><i class="fa fa-eye fa-fw"></i> 瀏覽模式</li>
+                            <li role="option" data-mode="book" data-icon="fa-book"><i class="fa fa-book fa-fw"></i> 書本模式</li>
+                            <li role="option" data-mode="slide" data-icon="fa-television"><i class="fa fa-television fa-fw"></i> 簡報模式</li>
+                        </ul>
+                    </div>
+                    <button type="button" class="share-mode-help" aria-expanded="false" title="模式說明"><i class="fa fa-question-circle"></i></button>
+                    <a class="btn btn-default share-preview" target="_blank" rel="noopener">預覽</a>
+                </div>
+                <dl class="share-mode-help-text" hidden>
+                    <dt>編輯模式</dt><dd>左邊編輯、右邊即時預覽（雙欄）。</dd>
+                    <dt>瀏覽模式</dt><dd>只顯示排版後的內容，可隨時切換回編輯。</dd>
+                    <dt>書本模式</dt><dd>把這篇筆記當成一本書的目錄：筆記裡用清單列出的筆記連結會變成左側的章節目錄（標題會分組），點選後在右邊閱讀，網址是 <code>/b/…</code>。</dd>
+                    <dt>簡報模式</dt><dd>用 <code>---</code> 分隔投影片，全螢幕播放。</dd>
+                </dl>
+
+                <hr>
+
+                <div class="share-label">權限</div>
+                <div class="share-perm-row">
+                    <label for="share-read">可閱讀</label>
+                    <select class="form-control share-read" id="share-read">
+                        <option value="owner">只有我</option>
+                        <option value="signed">已登入的使用者</option>
+                        <option value="everyone">所有人</option>
+                    </select>
+                </div>
+                <div class="share-perm-row">
+                    <label for="share-edit">可編輯</label>
+                    <select class="form-control share-edit" id="share-edit">
+                        <option value="owner">只有我</option>
+                        <option value="signed">已登入的使用者</option>
+                        <option value="everyone">所有人</option>
+                    </select>
+                </div>
+                <p class="share-perm-desc"></p>
+                <p class="share-perm-note" hidden>只有筆記的擁有者可以變更權限。</p>
+            </div>
+
+            <div class="modal-body share-pane" id="share-tab-publish" data-share-pane="publish" hidden>
+                <label class="share-label" for="share-publish-url">發表網址</label>
+                <p class="share-hint">以文章版面發表這篇筆記，沒有編輯介面。能不能開啟，取決於「分享」頁的「可閱讀」權限。</p>
+                <div class="share-row">
+                    <input type="text" class="form-control share-publish-url" id="share-publish-url" readonly>
+                    <button type="button" class="btn btn-default share-copy" data-copy="publish">複製</button>
+                </div>
+                <p class="share-perm-desc share-publish-desc"></p>
+                <a class="btn btn-default share-publish-open" target="_blank" rel="noopener">開啟發表頁</a>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary btn-block share-copy-main"><i class="fa fa-link"></i> 複製共享連結</button>
+                <span class="share-toast" role="status" aria-live="polite"></span>
+            </div>
+        </div>
+    </div>
+</div>

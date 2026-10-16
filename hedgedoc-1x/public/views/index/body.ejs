@@ -1,0 +1,320 @@
+<div class="site-wrapper">
+    <div class="site-wrapper-inner">
+        <div class="cover-container">
+
+            <div class="masthead clearfix">
+                <div class="inner">
+                    <h3 class="masthead-brand"><a href="<%- serverURL %>/"><img class="ctp-brand-logo" src="<%- serverURL %>/icons/android-chrome-192x192.png" alt="" width="28" height="28">Lilith</a></h3>
+                    <nav>
+                        <ul class="nav masthead-nav">
+                            <li class="ui-home<% if(!signin) { %> active<% } %>"><a href="#"><%= __('Intro') %></a>
+                            </li>
+                            <li class="ui-history<% if(signin) { %> active<% } %>"><a href="#"><%= __('History') %></a>
+                            </li>
+                            <div class="ui-signin" style="float: right; margin-top: 8px;<% if(signin) { %> display: none;<% } %>">
+                                <% if (allowAnonymous && !disableNoteCreation) { %>
+                                <a type="button" href="<%- serverURL %>/new" class="btn btn-sm btn-primary"><i class="fa fa-plus"></i> <%= __('New guest note') %></a>
+                                <% } %>
+                                <% if (authProviders.facebook || authProviders.twitter || authProviders.github || authProviders.gitlab || authProviders.mattermost || authProviders.dropbox || authProviders.google || authProviders.ldap || authProviders.saml || authProviders.oauth2 || authProviders.email) { %>
+                                <a class="btn btn-sm btn-success ui-signin" href="<%- serverURL %>/login"><%= __('Sign In') %></a>
+                                <% } %>
+                                <% if (authProviders.email && authProviders.allowEmailRegister) { %>
+                                <a class="btn btn-sm btn-default ui-register" href="<%- serverURL %>/register"><%= __('Register') %></a>
+                                <% } %>
+                            </div>
+                            <div class="ui-signout" style="float: right; margin-top: 8px;<% if(!signin) { %> display: none;<% } %>">
+                                <% if (!disableNoteCreation) { %>
+                                <a type="button" href="<%- serverURL %>/new" class="btn btn-sm btn-primary"><i class="fa fa-plus"></i> <%= __('New note') %></a>
+                                <% } %>
+                                <span class="ctp-bell-slot" hidden></span>
+                                <span class="ui-profile dropdown pull-right">
+                                    <button id="profileLabel" class="btn btn-sm btn-link ui-profile-label" style="padding-right: 0;" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        <img class="ui-avatar" width="20" height="20"><span class="hidden-xs hidden-sm">&ensp;<span class="ui-name"></span></span>&ensp;<i class="fa fa-caret-down"></i>
+                                    </button>
+                                    <ul class="dropdown-menu" aria-labelledby="profileLabel">
+                                        <li><a href="#" class="ui-edit-profile" data-toggle="modal" data-target=".profile-modal"><i class="fa fa-user fa-fw"></i> 編輯使用者資料</a></li>
+                                        <li><a href="<%- serverURL %>/features"><i class="fa fa-dot-circle-o fa-fw"></i> <%= __('Features') %></a></li>
+                                        <li><a href="<%- serverURL %>/me/export"><i class="fa fa-cloud-download fa-fw"></i> <%= __('Export user data') %></a></li>
+                                        <li><a class="ui-delete-user" data-toggle="modal" data-target=".delete-user-modal"><i class="fa fa-trash fa-fw"></i> <%= __('Delete user') %></a></li>
+                                        <li><a href="<%- serverURL %>/logout"><i class="fa fa-sign-out fa-fw"></i> <%= __('Sign Out') %></a></li>
+                                    </ul>
+                                </span>
+                            </div>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+
+            <div id="home" class="section"<% if(signin) { %> style="display:none;"<% } %>>
+                <div class="inner cover ctp-home">
+                    <%# Lilith: Blowfish-style hero, feature cards, Stack-style note cards %>
+                    <header class="ctp-hero ctp-home-profile">
+                        <div class="ctp-hero-glow" aria-hidden="true"><span></span><span></span><span></span></div>
+                        <%# Lilith logo (silhouette, 功能/18-Logo) on a pale disc; the name is already in the top bar %>
+                        <span class="ctp-home-avatar" aria-hidden="true"><img src="<%- serverURL %>/icons/lilith-logo.png" alt="" width="90" height="90"></span>
+                        <%# a random quote (lib/quotes.js), typed out by catppuccin.js %>
+                        <h1 class="cover-heading ctp-quote" data-typewriter data-quotes="<%= JSON.stringify(quotes) %>"<% if (quote.lang) { %> lang="<%= quote.lang %>"<% } %>><%= quote.text %></h1>
+                        <p class="ctp-quote-source">—— <%= quote.source %></p>
+                        <p class="ctp-hero-sub">用 Markdown 寫下想法、整理知識，需要時再分享出去。即時編輯、簡報、權限控管，都在同一個地方。</p>
+                        <% if (infoMessage && infoMessage.length > 0) { %>
+                        <div class="alert alert-info"><%= infoMessage %></div>
+                        <% } %>
+                        <% if (errorMessage && errorMessage.length > 0) { %>
+                        <div class="alert alert-danger"><%= errorMessage %></div>
+                        <% } %>
+                        <div class="ctp-home-actions">
+                            <% if (authProviders.facebook || authProviders.twitter || authProviders.github || authProviders.gitlab || authProviders.mattermost || authProviders.dropbox || authProviders.google || authProviders.ldap || authProviders.saml || authProviders.oauth2 || authProviders.email) { %>
+                            <a class="btn btn-lg btn-success ui-signin" href="<%- serverURL %>/login" style="min-width: 200px;"><%= __('Sign In') %></a>
+                            <% if (authProviders.email && authProviders.allowEmailRegister) { %>
+                            <a class="btn btn-lg btn-default ui-signin ui-register" href="<%- serverURL %>/register" style="min-width: 200px;"><%= __('Register') %></a>
+                            <% } %>
+                            <% } %>
+                            <a class="btn btn-lg btn-default ctp-btn-ghost" href="<%- serverURL %>/features">探索功能 <span aria-hidden="true">&rarr;</span></a>
+                        </div>
+                    </header>
+
+                    <section class="ctp-home-section">
+                        <h2 class="ctp-home-title"><span>功能</span><a href="<%- serverURL %>/features">看全部 <span aria-hidden="true">&rarr;</span></a></h2>
+                        <ul class="ctp-home-features">
+                            <li><a href="<%- serverURL %>/features#Share-Notes"><i class="fa fa-bolt fa-fw"></i><span><strong>即時共同編輯</strong>Markdown 一邊寫一邊預覽，多人同時編輯</span></a></li>
+                            <li><a href="<%- serverURL %>/features#Permissions"><i class="fa fa-lock fa-fw"></i><span><strong>分享與權限</strong>只有自己、可閱讀、可編輯，隨時調整</span></a></li>
+                            <li><a href="<%- serverURL %>/features#Slide-Mode"><i class="fa fa-tv fa-fw"></i><span><strong>簡報模式</strong>同一份筆記直接變成投影片</span></a></li>
+                            <li><a href="<%- serverURL %>/features#MathJax"><i class="fa fa-bar-chart fa-fw"></i><span><strong>數學式與圖表</strong>MathJax、流程圖、序列圖等</span></a></li>
+                            <li><span class="ctp-home-feature"><i class="fa fa-book fa-fw"></i><span><strong>書本模式</strong>用一篇目錄筆記把多篇筆記串成一本書，邊看目錄邊編輯</span></span></li>
+                            <li><span class="ctp-home-feature"><i class="fa fa-users fa-fw"></i><span><strong>團隊工作區</strong>邀請成員共用筆記，分管理員與成員權限</span></span></li>
+                        </ul>
+                    </section>
+
+                    <section class="ctp-home-section">
+                        <h2 class="ctp-home-title"><span>推薦文章</span><small>最近更新的公開筆記</small></h2>
+                        <% if (publicNotes && publicNotes.length > 0) { %>
+                        <ul class="ctp-home-notes ctp-cards">
+                            <% publicNotes.forEach(function (n) { %>
+                            <li class="ctp-card">
+                                <a href="<%- serverURL %>/<%= n.book ? 'b' : 's' %>/<%= n.shortid %>">
+                                    <span class="ctp-card-cover" aria-hidden="true"></span>
+                                    <span class="ctp-card-body">
+                                        <% if (n.tags.length > 0) { %>
+                                        <span class="ctp-card-tags"><% n.tags.forEach(function (t) { %><span><%= t %></span><% }) %></span>
+                                        <% } %>
+                                        <span class="ctp-card-title"><%= n.title %><i class="fa <%= n.book ? 'fa-book' : 'fa-file-text-o' %> ctp-card-kind" title="<%= n.book ? '書本' : '筆記' %>" aria-hidden="true"></i></span>
+                                        <% if (n.excerpt) { %>
+                                        <span class="ctp-card-excerpt"><%= n.excerpt %></span>
+                                        <% } %>
+                                        <span class="ctp-card-meta"><span><i class="fa fa-calendar-o"></i> <time><%= n.date %></time></span><span><i class="fa fa-clock-o"></i> 約 <%= n.minutes %> 分鐘</span></span>
+                                    </span>
+                                </a>
+                            </li>
+                            <% }) %>
+                        </ul>
+                        <% } else { %>
+                        <p class="ctp-home-empty">目前還沒有公開的筆記。</p>
+                        <% } %>
+                    </section>
+                </div>
+            </div>
+
+            <div id="history" class="section"<% if(!signin) { %> style="display:none;"<% } %>>
+                <%# Lilith: Stack-style layout -- profile sidebar + note cards %>
+                <div class="ctp-history-layout">
+                    <aside class="ctp-side">
+                        <%# Lilith (feature 24): workspace switcher like HackMD's -- my space / teams; lib/noteList.js fills it %>
+                        <div class="ctp-workspace" style="display:none;">
+                            <button type="button" class="ctp-workspace-toggle" aria-haspopup="true" aria-expanded="false">
+                                <span class="ctp-ws-badge" aria-hidden="true"><i class="fa fa-user"></i></span>
+                                <span class="ctp-ws-name">我的空間</span>
+                                <i class="fa fa-angle-down" aria-hidden="true"></i>
+                            </button>
+                            <div class="ctp-workspace-menu" role="menu" hidden></div>
+                        </div>
+                        <div class="ui-signout ctp-side-profile"<% if(!signin) { %> style="display:none;"<% } %>>
+                            <img class="ui-avatar ctp-side-avatar" width="88" height="88" alt="">
+                            <div class="ctp-side-name ui-name"></div>
+                        </div>
+                        <div class="ui-signin ctp-side-profile"<% if(signin) { %> style="display:none;"<% } %>>
+                            <span class="ctp-side-avatar ctp-side-guest" aria-hidden="true"><i class="fa fa-user"></i></span>
+                            <div class="ctp-side-name">訪客</div>
+                            <p class="ctp-side-note"><%= __('Below is the history from browser') %></p>
+                        </div>
+                        <nav class="ctp-side-nav">
+                            <a class="active" href="#" aria-current="page"><i class="fa fa-history fa-fw"></i> 紀錄</a>
+                            <% if (!disableNoteCreation) { %>
+                            <a class="ui-signout" href="<%- serverURL %>/new"<% if(!signin) { %> style="display:none;"<% } %>><i class="fa fa-plus fa-fw"></i> 新增筆記</a>
+                            <% } %>
+                            <a href="<%- serverURL %>/features"><i class="fa fa-dot-circle-o fa-fw"></i> 功能介紹</a>
+                            <a class="ui-signout" href="#" data-toggle="modal" data-target=".profile-modal"<% if(!signin) { %> style="display:none;"<% } %>><i class="fa fa-user fa-fw"></i> 編輯使用者資料</a>
+                            <a class="ui-signout" href="<%- serverURL %>/logout"<% if(!signin) { %> style="display:none;"<% } %>><i class="fa fa-sign-out fa-fw"></i> <%= __('Sign Out') %></a>
+                            <a class="ui-signin" href="<%- serverURL %>/login"<% if(signin) { %> style="display:none;"<% } %>><i class="fa fa-sign-in fa-fw"></i> <%= __('Sign In') %></a>
+                        </nav>
+                        <%# Lilith (feature 20): bookmarks and the user's own folders; lib/noteList.js fills and shows it %>
+                        <div class="ctp-organize" style="display:none;">
+                            <div class="ctp-side-title">整理</div>
+                            <nav class="ctp-side-nav ctp-scope-nav">
+                                <a href="#" data-scope="all" class="active"><i class="fa fa-th-large fa-fw" aria-hidden="true"></i> 所有筆記</a>
+                                <a href="#" data-scope="starred"><i class="fa fa-bookmark-o fa-fw" aria-hidden="true"></i> 收藏<span class="ctp-folder-count"></span></a>
+                            </nav>
+                            <div class="ctp-side-title">資料夾<button type="button" class="ctp-folder-add" title="新增資料夾" aria-label="新增資料夾"><i class="fa fa-plus"></i></button></div>
+                            <nav class="ctp-side-nav ctp-folder-list"></nav>
+                            <nav class="ctp-side-nav ctp-my-links">
+                                <a href="<%- serverURL %>/activity"><i class="fa fa-clock-o fa-fw" aria-hidden="true"></i> 我的活動</a>
+                                <a href="<%- serverURL %>/trash"><i class="fa fa-trash-o fa-fw" aria-hidden="true"></i> 垃圾桶</a>
+                            </nav>
+                        </div>
+                        <%# Lilith (feature 22): tags with counts, like HackMD's side bar; lib/noteList.js fills it %>
+                        <div class="ctp-tags-side">
+                            <div class="ctp-side-title">標籤</div>
+                            <input type="search" class="form-control ctp-tag-filter" placeholder="搜尋標籤…" aria-label="搜尋標籤">
+                            <nav class="ctp-side-nav ctp-tag-list"></nav>
+                        </div>
+                    </aside>
+                    <div class="ctp-history-main">
+                        <%# Lilith (feature 22): toolbar like HackMD's list -- search, grid / list, sort and group, new folder.
+                            The tag picker stays (hidden) because cover.js drives it; tags are picked in the side bar. %>
+                        <%# Lilith (feature 24): shown while a team is selected %>
+                        <div class="ctp-team-bar" hidden>
+                            <h2 class="ctp-team-bar-name"><i class="fa fa-users" aria-hidden="true"></i> <span></span></h2>
+                            <div class="ctp-team-bar-tools">
+                                <a class="btn btn-default ctp-team-bar-trash" href="<%- serverURL %>/trash" hidden><i class="fa fa-trash-o" aria-hidden="true"></i> 團隊垃圾桶</a>
+                                <a class="btn btn-default ctp-team-bar-page" href="#"><i class="fa fa-globe" aria-hidden="true"></i> 公開頁</a>
+                                <a class="btn btn-default ctp-team-bar-settings" href="#"><i class="fa fa-cog" aria-hidden="true"></i> 團隊設定</a>
+                                <button type="button" class="btn btn-primary ctp-team-bar-new"><i class="fa fa-plus" aria-hidden="true"></i> 新增團隊筆記</button>
+                            </div>
+                        </div>
+                        <form class="form-inline ctp-list-toolbar" onsubmit="return false;">
+                            <div class="form-group ctp-hidden-tags">
+                                <input class="form-control ui-use-tags" placeholder="<%= __('Select tags...') %>" />
+                            </div>
+                            <div class="form-group ctp-list-search">
+                                <i class="fa fa-search" aria-hidden="true"></i>
+                                <input class="search form-control" type="search" placeholder="搜尋標題或標籤…" aria-label="搜尋筆記" />
+                            </div>
+                            <div class="ctp-list-tools">
+                                <div class="btn-group ctp-view-toggle" role="group" aria-label="顯示方式">
+                                    <button type="button" class="btn btn-default" data-view="grid" title="格狀" aria-label="格狀" aria-pressed="true"><i class="fa fa-th-large" aria-hidden="true"></i></button>
+                                    <button type="button" class="btn btn-default" data-view="list" title="清單" aria-label="清單" aria-pressed="false"><i class="fa fa-list" aria-hidden="true"></i></button>
+                                </div>
+                                <div class="dropdown ctp-sort">
+                                    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa fa-sort-amount-desc" aria-hidden="true"></i> 排序 <i class="fa fa-angle-down" aria-hidden="true"></i></button>
+                                    <ul class="dropdown-menu dropdown-menu-right" role="menu">
+                                        <li class="dropdown-header">排序</li>
+                                        <li><a href="#" role="menuitemradio" data-sort-mode="recent">最近瀏覽</a></li>
+                                        <li><a href="#" role="menuitemradio" data-sort-mode="oldest">最早瀏覽</a></li>
+                                        <li><a href="#" role="menuitemradio" data-sort-mode="title">標題 A → Z</a></li>
+                                        <li><a href="#" role="menuitemradio" data-sort-mode="title-desc">標題 Z → A</a></li>
+                                        <li class="divider"></li>
+                                        <li class="dropdown-header">分組</li>
+                                        <li><a href="#" role="menuitemradio" data-group-mode="tag">依標籤</a></li>
+                                        <li><a href="#" role="menuitemradio" data-group-mode="year">依年份</a></li>
+                                        <li><a href="#" role="menuitemradio" data-group-mode="none">不分組</a></li>
+                                    </ul>
+                                </div>
+                                <span class="hidden-xs hidden-sm ctp-list-io">
+                                    <a href="#" class="btn btn-default ui-save-history" title="<%= __('Export history') %>" aria-label="<%= __('Export history') %>"><i class="fa fa-save"></i></a>
+                                    <span class="btn btn-default btn-file ui-open-history" title="<%= __('Import history') %>">
+                                        <i class="fa fa-folder-open-o"></i><input type="file" aria-label="<%= __('Import history') %>" />
+                                    </span>
+                                    <a href="#" class="btn btn-default ui-clear-history" title="<%= __('Clear history') %>" aria-label="<%= __('Clear history') %>" data-toggle="modal" data-target=".delete-history-modal"><i class="fa fa-trash-o"></i></a>
+                                </span>
+                                <a href="#" class="btn btn-default ui-refresh-history" title="<%= __('Refresh history') %>" aria-label="<%= __('Refresh history') %>"><i class="fa fa-refresh"></i></a>
+                                <button type="button" class="btn btn-default ctp-folder-new ui-signout"<% if(!signin) { %> style="display:none;"<% } %>><i class="fa fa-folder-o" aria-hidden="true"></i> 建立資料夾</button>
+                            </div>
+                        </form>
+                        <h4 class="ui-nohistory" style="display:none;">
+                            <%= __('No history') %>
+                        </h4>
+                        <a href="#" class="btn btn-primary ui-import-from-browser" style="display:none;"><%= __('Import from browser') %></a>
+                        <ul id="history-list" class="list">
+                        </ul>
+                        <ul class="pagination"></ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mastfoot">
+                <div class="inner">
+                    <%# Lilith: like Blowfish's footer, the site on the left, what powers it on the right %>
+                    <p class="ctp-copyright">&copy; <%= new Date().getFullYear() %> Lilith</p>
+                    <select class="ui-locale"></select>
+                    <p class="ctp-poweredby">
+                        <%- __('Powered by %s', '<a href="https://hedgedoc.org">HedgeDoc</a>') %> | <a href="<%- serverURL %>/s/release-notes" target="_blank" rel="noopener"><%= __('Releases') %></a> | <a href="<%- sourceURL %>" target="_blank" rel="noopener"><%= __('Source Code') %></a><% if(imprint) { %> | <a href="<%- serverURL %>/s/imprint" target="_blank" rel="noopener"><%= __('Imprint') %></a><% } %><% if(privacyStatement) { %> | <a href="<%- serverURL %>/s/privacy" target="_blank" rel="noopener"><%= __('Privacy') %></a><% } %><% if(termsOfUse) { %> | <a href="<%- serverURL %>/s/terms-of-use" target="_blank" rel="noopener"><%= __('Terms of Use') %></a><% } %>
+                    </p>
+                    <h6 class="social-foot">
+                        <%- __('Follow us on %s and %s.', '<a href="https://github.com/hedgedoc/hedgedoc" target="_blank" rel="noopener"><i class="fa fa-github"></i> GitHub</a>, <a href="https://community.hedgedoc.org" target="_blank" rel="noopener"><i class="fa fa-users" aria-hidden="true"></i> Discourse</a>, <a href="https://chat.hedgedoc.org" target="_blank" rel="noopener"><i class="fa fa-comments"></i> Matrix</a>, <a href="https://social.hedgedoc.org/mastodon" target="_blank" rel="noopener"><i class="fa fa-mastodon"></i> Mastodon</a>', '<a href="https://translate.hedgedoc.org" target="_blank" rel="noopener"><i class="fa fa-globe"></i> POEditor</a>') %>
+                    </h6>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- delete history modal -->
+<div class="modal fade delete-history-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title" id="myModalLabel"><%= __('Are you sure?') %></h4>
+            </div>
+            <div class="modal-body">
+                <h5 class="ui-delete-history-modal-msg"></h5>
+                <strong class="ui-delete-history-modal-item"></strong>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal"><%= __('Cancel') %></button>
+                <button type="button" class="btn btn-danger ui-delete-history-modal-confirm"><%= __('Yes, do it!') %></button>
+            </div>
+        </div>
+    </div>
+</div>
+<%# Lilith (feature 20): one dialog for the note card menu (rename, tags, move, delete...), set up by lib/noteList.js %>
+<div class="modal fade ctp-dialog-modal" tabindex="-1" role="dialog" aria-labelledby="ctpDialogTitle" aria-hidden="true">
+    <div class="modal-dialog ctp-dialog">
+        <form class="modal-content" novalidate>
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="關閉"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="ctpDialogTitle"></h4>
+            </div>
+            <div class="modal-body">
+                <p class="ctp-dialog-msg"></p>
+                <div class="ctp-dialog-item"></div>
+                <div class="ctp-dialog-field">
+                    <label for="ctpDialogInput"></label>
+                    <input type="text" class="form-control" id="ctpDialogInput" maxlength="120" autocomplete="off">
+                    <p class="ctp-dialog-hint"></p>
+                </div>
+                <div class="ctp-dialog-choices" role="radiogroup" aria-label="資料夾"></div>
+                <div class="ctp-dialog-new">
+                    <label for="ctpDialogNewFolder">或新增資料夾並移進去</label>
+                    <input type="text" class="form-control ctp-dialog-new-folder" id="ctpDialogNewFolder" maxlength="40" placeholder="新資料夾名稱" autocomplete="off">
+                </div>
+                <p class="ctp-dialog-error" role="alert"></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                <button type="submit" class="btn btn-primary ctp-dialog-ok"></button>
+            </div>
+        </form>
+    </div>
+</div>
+<!-- delete user modal -->
+<div class="modal fade delete-user-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title" id="myModalLabel"><%= __('Are you sure?') %></h4>
+            </div>
+            <div class="modal-body">
+                <h5 class="ui-delete-user-modal-msg"><%= __('Do you really want to delete your user account?') %></h5>
+                <strong class="ui-delete-user-modal-item"><%= __('This will delete your account, all notes that are owned by you and remove all references to your account from other notes.') %></strong>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default ui-delete-user-modal-cancel" data-dismiss="modal"><%= __('Cancel') %></button>
+                <a type="button" class="btn btn-danger" href="<%- serverURL %>/me/delete/<%- deleteToken %>"><%= __('Yes, do it!') %></a>
+            </div>
+        </div>
+    </div>
+</div>
+<%- include('../shared/signin-modal') %>
+<%- include('../shared/profile-modal') %>

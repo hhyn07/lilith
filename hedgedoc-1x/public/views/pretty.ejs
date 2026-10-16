@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="mobile-web-app-capable" content="yes">
+    <% if(typeof robots !== 'undefined' && robots) { %>
+    <meta name="robots" content="<%= robots %>">
+    <% } %>
+    <% if(typeof description !== 'undefined' && description) { %>
+    <meta name="description" content="<%= description %>">
+    <% } %>
+    <% for (var og in opengraph) { %>
+    <% if (opengraph.hasOwnProperty(og) && opengraph[og].trim() !== '') { %>
+    <meta property="og:<%= og %>" content="<%= opengraph[og] %>">
+    <% }} if (!opengraph.hasOwnProperty('image')) { %>
+    <meta property="og:image" content="<%- serverURL %>/icons/android-chrome-512x512.png">
+    <meta property="og:image:alt" content="HedgeDoc logo">
+    <meta property="og:image:type" content="image/png">
+    <% } %>
+    <base href="<%- serverURL %>/">
+    <title><%= title %></title>
+    <%- include('includes/favicon.ejs') %>
+    <link rel="stylesheet" href='<%- serverURL %>/build/emojify.js/dist/css/basic/emojify.min.css'>
+    <%- include('build/pretty-pack-header') %>
+    <script src="<%- serverURL %>/js/catppuccin.js?v=122"></script>
+    <link rel="stylesheet" href="<%- serverURL %>/css/catppuccin.css?v=122">
+</head>
+
+<body style="display:none;">
+    <%# Lilith: top bar like HackMD's published page -- brand, open modes and "changed ... ago" with the
+        author on the left; bookmark, theme and table of contents on the right (catppuccin.js fills them).
+        The separate info bar under it is gone: its facts are here now. %>
+    <header class="ctp-pretty-bar unselectable hidden-print">
+        <div class="ctp-pretty-left">
+            <a class="ctp-pretty-brand" href="<%- serverURL %>/"><img class="ctp-brand-logo" src="<%- serverURL %>/icons/android-chrome-192x192.png" alt="" width="28" height="28"><span class="ctp-brand">Lilith</span></a>
+            <nav class="ctp-pretty-modes" aria-label="開啟方式">
+                <a class="ui-edit-mode" data-mode="edit" href="#" title="編輯" aria-label="編輯"><i class="fa fa-pencil fa-fw" aria-hidden="true"></i></a>
+                <a class="ui-edit-mode" data-mode="both" href="#" title="雙欄（編輯＋預覽）" aria-label="雙欄"><i class="fa fa-columns fa-fw" aria-hidden="true"></i></a>
+                <span class="active" aria-current="page" title="檢視（目前）" aria-label="檢視"><i class="fa fa-eye fa-fw" aria-hidden="true"></i></span>
+            </nav>
+            <span class="ctp-pretty-meta">
+                <% if(lastchangeuserprofile) { %>
+                <span class="ui-lastchangeuser"><i class="ui-user-icon small" style="background-image: url(<%- lastchangeuserprofile.photo %>);" title="<%= lastchangeuserprofile.name %>" aria-label="<%= lastchangeuserprofile.name %>"></i></span>
+                <% } else { %>
+                <span class="ui-no-lastchangeuser"><i class="fa fa-clock-o fa-fw" aria-hidden="true"></i></span>
+                <% } %>
+                <span class="ui-status-lastchange changed">變更於</span><span class="ui-status-lastchange created" style="display:none;">建立於</span>
+                <span class="ui-lastchange" data-createtime="<%- createtime %>" data-updatetime="<%- updatetime %>"></span>
+            </span>
+        </div>
+        <div class="ctp-pretty-actions">
+            <span class="ctp-pretty-views" title="瀏覽次數"><%- viewcount %> 次瀏覽</span>
+            <button type="button" class="ctp-pretty-btn ctp-pretty-like" title="喜歡" aria-label="喜歡" aria-pressed="false" hidden><i class="fa fa-heart-o" aria-hidden="true"></i><span class="ctp-like-count"></span></button>
+            <button type="button" class="ctp-pretty-btn ctp-pretty-star" title="收藏" aria-label="收藏" aria-pressed="false" hidden><i class="fa fa-bookmark-o" aria-hidden="true"></i></button>
+            <span class="ctp-pretty-theme"></span>
+            <button type="button" class="ctp-pretty-btn ctp-pretty-toc" title="目錄" aria-label="目錄" aria-pressed="true" hidden><i class="fa fa-list-ul" aria-hidden="true"></i></button>
+        </div>
+    </header>
+    <div id="doc" class="container markdown-body" <% if (lang) { %> lang="<%= lang %>"<% } %>><%= body %></div>
+    <div class="ui-toc dropup unselectable hidden-print" style="display:none;">
+        <div class="pull-right dropdown">
+            <a id="tocLabel" class="ui-toc-label btn btn-default" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false" title="Table of content">
+                <i class="fa fa-bars"></i>
+            </a>
+            <ul id="ui-toc" class="ui-toc-dropdown dropdown-menu" aria-labelledby="tocLabel">
+            </ul>
+        </div>
+    </div>
+    <div id="ui-toc-affix" class="ui-affix-toc ui-toc-dropdown unselectable hidden-print" data-spy="affix" style="display:none;"></div>
+    <% if(typeof disqus !== 'undefined' && disqus && !dnt) { %>
+    <div class="container-fluid" style="max-width: 758px; margin-bottom: 40px;">
+        <%- include('shared/disqus') %>
+    </div>
+    <% } %>
+</body>
+
+</html>
+<script src="<%= serverURL %>/js/mathjax-config-extra.js"></script>
+<script src="<%- serverURL %>/build/MathJax/MathJax.js" defer></script>
+<script src="<%- serverURL %>/build/MathJax/config/TeX-AMS-MML_HTMLorMML.js" defer></script>
+<script src="<%- serverURL %>/build/MathJax/config/Safe.js" defer></script>
+<%- include('build/pretty-pack-scripts') %>
+<%- include('shared/ga') %>

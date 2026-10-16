@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="robots" content="noindex, nofollow">
+    <base href="<%- serverURL %>/">
+    <title>Lilith</title>
+    <%- include('includes/favicon.ejs') %>
+    <%- include('build/pretty-pack-header') %>
+    <script src="<%- serverURL %>/js/catppuccin.js?v=122"></script>
+    <link rel="stylesheet" href="<%- serverURL %>/css/catppuccin.css?v=122">
+</head>
+
+<body class="ctp-book-shell">
+<%# Lilith (feature 21 E15): editing inside a book like HackMD's -- the book's table of
+    contents stays on the left, the editor is a frame on the right; moving to another
+    page only reloads the frame (catppuccin.js bookShell) %>
+<script type="application/json" id="ctp-book-shell"><%- shell %></script>
+<div class="ctp-book-shell-side"></div>
+<button type="button" class="ctp-pretty-btn ctp-book-expand ctp-book-shell-expand hidden-print" title="顯示書本目錄" aria-label="顯示書本目錄" hidden><i class="fa fa-book" aria-hidden="true"></i></button>
+<main class="ctp-book-shell-main">
+    <iframe class="ctp-book-frame" src="<%= frameSrc %>" title="編輯器"></iframe>
+    <div class="ctp-book-loading" role="status" aria-label="載入中"><span class="ctp-spinner" aria-hidden="true"></span></div>
+</main>
+</body>
+
+</html>
