@@ -140,6 +140,9 @@
 | 134 | 公開 repo、絕對不能有 gitleak | 另開乾淨的公開 repo：快照＋去除個人資料＋官方 gitleaks v8.30.1（改掉 HedgeDoc 文件裡 2 個很像真金鑰的範例值）→ 檔案與歷史 0 個發現；匿名作者信箱；推到 `hhyn07/lilith`（`e4c4f5c`） | [03](功能/03-版本控制/README.md) |
 | 135 | 公開 repo 怎麼設定 | 說明在 GitHub Settings → Danger Zone 改 visibility；之後實測 `lilith` 已是公開 | [03](功能/03-版本控制/README.md) |
 | 136 | 別人照 README 能不能啟動 | 原本不行（只寫 `node app.js`）；README 改成五步＋新增 `config.lilith.example.json`，從零 clone 實測可以啟動、註冊、寫筆記 | [01](功能/01-環境建置與啟動/README.md) |
+| 137 | 推公開版 | 照 03 的步驟重新匯出、去除個人資料、gitleaks 檔案與歷史 0 個發現，推到 `hhyn07/lilith`（`1f44851`，匿名作者） | [03](功能/03-版本控制/README.md) |
+| 138 | 紀錄頁拒絕連線 | 伺服器隨上一段工作階段停止；重新啟動，資料沒受影響 | — |
+| 139 | 工作空間選單被卡片蓋住 | `64a0a6d2`：sticky 側欄的堆疊順序 | [28](功能/28-團隊設定/README.md) E4 |
 
 ### 檢測總表（2026-10-16，`功能/run-all-checks.ps1`）
 | 功能 | PASS | WARN | FAIL | 備註 |

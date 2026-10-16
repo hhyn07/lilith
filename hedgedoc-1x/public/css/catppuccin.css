@@ -729,7 +729,9 @@ html[data-ctp] .social-foot { display: none !important; }
 
 html[data-ctp] #history { padding-top: 28px; }
 .ctp-history-layout { display: grid; grid-template-columns: 220px minmax(0, 1fr); gap: 32px; align-items: start; }
-.ctp-side { position: sticky; top: 96px; display: flex; flex-direction: column; gap: 22px; }
+/* z-index: sticky makes its own stacking context, so the workspace menu inside it was drawn
+   under the note cards on the right; above them, below the top bar (10) */
+.ctp-side { position: sticky; top: 96px; z-index: 5; display: flex; flex-direction: column; gap: 22px; }
 .ctp-side-profile:not([style*="none"]) { display: flex; flex-direction: column; align-items: flex-start; gap: 10px; }
 .ctp-side-avatar {
   display: flex;
@@ -883,7 +885,7 @@ html[data-ctp] #history .pagination { margin-top: 24px; }
 
 @media (max-width: 767px) {
   .ctp-history-layout { grid-template-columns: 1fr; gap: 20px; }
-  .ctp-side { position: static; flex-direction: row; flex-wrap: wrap; align-items: center; gap: 12px 20px; }
+  .ctp-side { position: relative; flex-direction: row; flex-wrap: wrap; align-items: center; gap: 12px 20px; }
   .ctp-side-profile:not([style*="none"]) { flex-direction: row; align-items: center; }
   .ctp-side-avatar { width: 48px; height: 48px; font-size: 22px; border-width: 2px; }
   .ctp-side-note { flex-basis: 100%; }
